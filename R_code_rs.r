@@ -36,7 +36,50 @@ plot(l2011$B1_sre, col=cl)
 clb <- colorRampPalette(c("dark blue", "blue", "light blue")) (100)
 plot(l2011$B1_sre, col=clb)
 
-# esportazione immagini in pdf nella cartella lab 
+# esportazione del plot nella cartella lab 
 pdf("banda1.pdf")
 plot(l2011$B1_sre, col=clb)
 dev.off()
+
+png("banda1.png")
+plot(l2011$B1_sre, col=clb)
+dev.off()
+
+# plot b2 from dark green to green to light green
+clg <- colorRampPalette(c("dark green", "green", "light green")) (100)
+plot(l2011$B2_sre, col=clg)
+
+#Multiframe
+par(mfrow=c(1,2))
+plot(l2011$B1_sre, col=clb)
+plot(l2011$B2_sre, col=clg)
+dev.off()
+
+# esport pdf multiframe 
+pdf("multiframe.pdf") 
+par(mfrow=c(1,2))
+plot(l2011$B1_sre, col=clb)
+plot(l2011$B2_sre, col=clg)
+dev.off()
+
+# revert the multiframe 
+par(mfrow=c(2,1))
+plot(l2011$B1_sre, col=clb)
+plot(l2011$B2_sre, col=clg)
+dev.off()
+
+# let's plot the first four bands
+par(mfrow=c(2,2))
+# plot blu
+plot(l2011$B1_sre, col=clb)
+# plot green
+plot(l2011$B2_sre, col=clg)
+# plot red 
+clr <- colorRampPalette(c("dark red", "red", "pink")) (100)
+plot(l2011$B3_sre, col=clr)
+# plot NIR
+clnir <- colorRampPalette(c("red", "orange", "yellow")) (100)
+plot(l2011$B4_sre, col=clnir)
+
+
+
