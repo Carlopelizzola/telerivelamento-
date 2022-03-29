@@ -81,5 +81,15 @@ plot(l2011$B3_sre, col=clr)
 clnir <- colorRampPalette(c("red", "orange", "yellow")) (100)
 plot(l2011$B4_sre, col=clnir)
 
+# plot l2011 in the NIR channel 
+plot(l2011$B4_sre)
+#or 
+plot(l2011[[4]])
+# cambio leggedna 
+clnir <- colorRampPalette(c("red", "orange", "yellow")) (100)
+plot(l2011$B4_sre, col=clnir)
+
+# plot RGB layers
+plotRGB(l2011, r=3, g=2, b=1, stretch="lin")
 
 
