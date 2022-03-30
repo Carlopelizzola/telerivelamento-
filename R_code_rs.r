@@ -92,9 +92,27 @@ plot(l2011$B4_sre, col=clnir)
 # plot RGB layers
 # plot visibile 
 plotRGB(l2011, r=3, g=2, b=1, stretch="lin")
-# plot nir 
+# plot nir in red per visualizzare vegetazione 
 plotRGB(l2011, r=4, g=3, b=2, stretch="lin")
+# plot RGB in nir in green per visualizzare vegetazione 
+plotRGB(l2011, r=3, g=4, b=2, stretch="lin")
+# plot RGB in NIR in blue per visualizzare suolo nudo 
+plotRGB(l2011, r=3, g=2, b=4, stretch="lin")
+# plot in hist
+plotRGB(l2011, r=3, g=4, b=2, stretch="hist")
 
+# multiframe whit Visibol RGB linear strech on top of fals coloror istagram strech
+par(mfrow=c(2,1))
+plotRGB(l2011, r=3, g=2, b=1, stretch="lin")
+plotRGB(l2011, r=3, g=4, b=2, stretch="hist")
 
+#upload from the image 1988
+l1988 <- brick("p224r63_1988.grd")
+l1988
+
+# multiframe
+par(mfrow=c(2,1))
+plotRGB(l1988, r=4, g=3, b=2, stretch="lin")
+plotRGB(l2011, r=4, g=3, b=2, stretch="lin")
 
 
