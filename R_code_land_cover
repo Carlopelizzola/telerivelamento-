@@ -34,3 +34,14 @@ p2 <- ggRGB(l06, 1, 2, 3, stretch="lin")
 p1+p2
 p1/p2 
 
+#clasification 
+l92c <- unsuperClass(l92, nClasses=2)
+l92c
+plot(l92c$map)
+
+l06c <- unsuperClass(l06, nClasses=2)
+l06c
+plot(l06c$map)
+
+
+
