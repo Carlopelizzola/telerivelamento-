@@ -1,0 +1,36 @@
+
+library(raster)
+library(RStoolbox) # for classification
+install.packages("ggplot2")
+library(ggplot2)
+install.packages("patchwork")
+library(patchwork)
+
+
+# setwd("~/lab/") # Linux
+
+setwd("C:/lab/") # Windows
+
+# setwd("/Users/name/Desktop/lab/") # Mac
+
+#importo l'intero pacco di dati 
+l92 <- brick("defor1_.jpg")
+plotRGB(l92, 1, 2, 3, stretch="lin")
+
+# Exercise: import defor2 and plot both in a single window
+l06 <- brick("defor2_.jpg")
+
+
+par(mfrow=c(2,1))
+plotRGB(l92, 1, 2, 3, stretch="lin")
+plotRGB(l06, 1, 2, 3, stretch="lin")
+
+ggRGB(l92, 1, 2, 3, stretch="lin")
+
+
+p1 <- ggRGB(l92, 1, 2, 3, stretch="lin")
+p2 <- ggRGB(l06, 1, 2, 3, stretch="lin")
+
+p1+p2
+p1/p2 
+
