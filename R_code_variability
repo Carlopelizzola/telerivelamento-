@@ -1,0 +1,52 @@
+library(raster)
+library(RStoolbox) # for image viewing and variability calculation
+library(ggplot2) # for ggplot plotting
+library(patchwork)
+
+setwd("C:/lab/") 
+
+sen <- brick("sentinel.png")
+
+ggRGB(sen, 1, 2, 3)
+ggRGB(sen, 2, 1, 3)
+
+# Exercise: plot the two graphs one beside the other
+g1 <- ggRGB(sen, 1, 2, 3)
+g2 <- ggRGB(sen, 2, 1, 3)
+ 
+# Thanks to patchwork!: 
+g1+g2
+
+g1/g2
+
+[10:17] Duccio Rocchini
+sd3 <- focal(nir, matrix(1/9, 3, 3), fun=sd)
+
+[10:18] Duccio Rocchini
+clsd <- colorRampPalette(c('blue','green','pink','magenta','orange','brown','red','yellow'))(100) #
+
+[10:18] Duccio Rocchini
+clsd <- colorRampPalette(c('blue','green','pink','magenta','orange','brown','red','yellow'))(100) #
+
+plot(sd3, col=clsd)
+
+[10:26] Duccio Rocchini
+ggplot() + geom_raster(sd3, mapping=aes(x=x, y=y, fill=layer))
+
+[10:34] Duccio Rocchini
+ install.packages("viridis")
+
+[10:34] Duccio Rocchini
+library(viridis)
+[10:36] Duccio Rocchini
+
+
+ggplot() +
+
+geom_raster(sd3, mapping =aes(x=x, y=y, fill=layer)) +
+
+scale_fill_viridis() +
+
+ggtitle("Standard deviation by viridis package")
+
+
