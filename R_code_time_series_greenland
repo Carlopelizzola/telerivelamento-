@@ -1,109 +1,121 @@
- Time series analysis
-# Greenland increase of temperature
-# Data and code from Emanuela Cosma
+ # Analisi delle serie temporali dei dati LST della Groenlandia
 
-# install.packages("raster")
-# install.packages("rasterVis")
-library(raster)
-# library(rasterVis) 
+libreria ( raster )
+setwd( " C:/lab/groenlandia " )
 
-# library(rgdal)
+# Importo i file tif uno alla volta con la funzione raster. Questo è il metodo lungo perché li importo più singolarmente
+lst2000  <- raster( " lst_2000.tif " )
+plot ( lst2000 )
 
-# setwd("~/lab/greenland") # Linux
-setwd("C:/lab/greenland") # Windows
-# setwd("/Users/name/Desktop/lab/greenland") # Mac 
+# Esercizio: Importa tutti i dati
+lst2005  <- raster( " lst_2005.tif " )
+lst2010  <- raster( " lst_2010.tif " )
+lst2015  <- raster( " lst_2015.tif " )
 
-lst_2000 <- raster("lst_2000.tif")
-lst_2005 <- raster("lst_2005.tif")
-lst_2010 <- raster("lst_2010.tif")
-lst_2015 <- raster("lst_2015.tif")
+# Creo una colorRampPalette per cambiare i colori della leggenda.
+cl  <- colorRampPalette(c( " blue " , " light blue " , " pink " , " red " )) ( 100 )
 
-cl <- colorRampPalette(c("blue", "light blue", "pink", "red"))(100)
+# Creo multiframe con 2 righe e 2 colonne
+par( mfrow = c( 2 , 2 ))
+plot( lst2000 , col = cl )
+plot( lst2005 , col = cl )
+plot( lst2010 , col = cl )
+plot( lst2015 , col = cl )
 
-# par
-par(mfrow=c(2,2))
-plot(lst_2000, col=cl)
-plot(lst_2005, col=cl)
-plot(lst_2010, col=cl)
-plot(lst_2015, col=cl)
-
-# import the whole set togheder
-# list f files:
-rlist <- list.files(pattern="lst")
+# Ora importo tutti i dati insieme applicando la funzione raster alla nostra lista di file.
+# La funzione l'applicazione poi si applica la funzione raster alla lista.
+# Importa del tutto l'intero set
+rlist  <- list.files( pattern = " lst " )
 rlist
-
-import <- lapply(rlist,raster)
+import  <- lapply( rlist , raster )
 import
 
-TGr <- stack(import)
-TGr
-plot(TGr, col=cl)
-plot(TGr[[1]], col=cl)
+# Con la funzione stack creo un blocco comune con tutti i dati che ho importato.
+# Ho preso i singoli layer e li ho messi insieme in un unico blocco.
+tgr  <- stack( import )
+tgr
 
-plotRGB(TGr, 1, 2, 3, stretch="Lin") 
-plotRGB(TGr, 2, 3, 4, stretch="Lin") 
-plotRGB(TGr, 4, 3, 2, stretch="Lin") 
+# Plotto il blocco di dati, in questo modo il risultato è lo stesso che otterrei creando un multiframe  
+# ma è molto più rapido perché non devo creare il mf
+plot( tgr , col = cl )
+# Plot di una singola banda, posso o usare $nome o mettere [[n.elemento]]
+plot( tgr [[ 1 ]], col = cl )
 
-# levelplot(TGr)
-cl <- colorRampPalette(c("blue","light blue","pink","red"))(100)
-plot(TGr, col=cl)
-
-# levelplot(TGr,col.regions=cl, names.attr=c("July 2000","July 2005", "July 2010", "July 2015"))
-# 
-# levelplot(TGr,col.regions=cl, main="LST variation in time",
-#           names.attr=c("July 2000","July 2005", "July 2010", "July 2015"))
-# 
-
-##########################
-#### Example 2: NO2 decrease during the lockdown period
-##########################
-
-library(raster)
-
-setwd("~/lab/en") # Linux
-# setwd("C:/lab/en") # Windows
-# setwd("/Users/name/Desktop/lab/en") # Mac 
-
-en01 <- raster("EN_0001.png") 
-
-cl <- colorRampPalette(c('red','orange','yellow'))(100) # 
-plot(en01, col=cl)
-
-en13 <- raster("EN_0013.png")
-plot(en13, col=cl)
-
-# Let's import the whole set (altogether!)
-
-# Exercise: import the whole as in the Greenland example
-# by the following steps: list.files, lapply, stack 
-
-rlist <- list.files(pattern="EN")
-
-# lapply(X,FUN)
-rimp <- lapply(rlist, raster)
-
-# stack
-en <- stack(rimp)
-
-# plot everything
-plot(en, col=cl)
-
-# Exercise: plot EN01 besides EN13
-par(mfrow=c(1,2))
-plot(en[[1]], col=cl)
-plot(en[[13]], col=cl)
-
-# or:
-en113 <- stack(en[[1]], en[[13]])
-plot(en113, col=cl)
-
-# let's make the difference:
-difen <-  en[[1]] - en[[13]]
-cldif <- colorRampPalette(c('blue','white','red'))(100) # 
-plot(difen, col=cldif)
-
-# plotRGB of three files together
-plotRGB(en, r=1, g=7, b=13, stretch="lin")
-plotRGB(en, r=1, g=7, b=13, stretch="hist")
+# Provo a plottare i dati con plotRGB, mettendo le bande in ordine cronologico nelle 3 componenti R, G, B.
+# Posso giocare con la sovrapposizione delle bande visto che ne ho 4 ma posso usarne solo 3 alla volta.
+plotRGB( tgr , r = 1 , g = 2 , b = 3 , stretch = " lin " )
 
 
+
+
+
+                                ### Analisi della attesa degli ossidi di azoto, NO2, durante il lockdown iniziale 2020 ###
+                                
+# Diminuzione di NO2 durante il periodo di lockdown nel 2020
+# EN significa azoto europeo
+
+libreria ( raster )
+setwd( " C:/lab/IT " )
+
+# Importo il primo dato usando la funzione raster perché ha un solo layer
+# Se ne avesse avuti di più come gli RGB allora avrei usato funzione brick
+# en01 è gennaio 2020 ed è un dato a 8 bit
+en01  <- raster( " EN_0001.png " )
+en01 
+cl  <- colorRampPalette(c( ' red ' , ' orange ' , ' yellow ' ))( 100 )
+plot( en01 , col = cl )
+
+# Importo il dato corrispondente a fine marzo 2020
+en13  <- raster( " EN_0013.png " )
+plot( en13 , col = cl )
+
+
+# Importiamo l'intero set (del tutto)
+# Esercizio: importa l'intero set come nell'esempio Groenlandia con i seguenti passaggi: list.files, lapply, stack
+
+rlist  <- list.files( pattern = " EN " )
+
+rimp  <- lapply( rlist , raster )
+
+it  <- stack( rimp )
+
+plot( en , col = cl )
+
+# Esercizio: traccia en01 oltre a en13
+par( mfrow = c( 1 , 2 ))
+plot( en $ en01 , col = cl )
+plot( en $ en13 , col = cl )
+
+# Oppure, invece del multiframe, posso fare stack da cui prendo i 2 elementi
+it113  <- stack( it [[ 1 ]], it [[ 13 ]])
+plot( en113 , col = cl )
+
+# Facciamo la differenza tra en01 e en13. Il rosso indica la zona in cui il calo è stato maggiore
+difen  <-  it [[ 1 ]] -  it [[ 13 ]]
+cldif  <- colorRampPalette(c( " blue " , " white " , " red " ))( 100 )
+plot( difen , col = cldif )
+
+# Uso una funzione per usare un codice che deriva da altre fonti
+# Riprendo parte del codice e lo salvo su word in .txt
+
+libreria ( raster )
+setwd( " C:/lab/IT " )
+en01  <- raster( " EN_0001.png " )
+en01 
+cl  <- colorRampPalette(c( ' red ' , ' orange ' , ' yellow ' ))( 100 )
+plot( en01 , col = cl )
+
+
+setwd( " C:/lab/ " )
+sorgente( " R_inputcode.txt " )
+
+# Importo tutte le immagini della cartella IT
+rlist  <- list.files( pattern = " EN " )
+rimp  <- lapply( rlist , raster )
+it  <- stack( rimp )
+cl  <- colorRampPalette(c( ' red ' , ' orange ' , ' yellow ' ))( 100 )
+plot( en , col = cl )
+
+# Ora faccio il plot RGB, usiamo le immagini 1, 7 e 15 nelle tre componenti R, G, B in cui i valori massimi di NO2 saranno del colore della componente corrispondente
+plotRGB( en , r = 1 , g = 7 , b = 15 , stretch = " lin " )
+plotRGB( en , r = 1 , g = 7 , b = 13 , stretch = " hist " ) 
