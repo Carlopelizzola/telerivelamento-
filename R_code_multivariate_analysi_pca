@@ -1,9 +1,25 @@
-library(raster)
-library(RStoolbox)
-library(ggplot2)
-library(patchwork)
+# Codice R per analisi multivariata
 
-setwd("C:/lab/")
+libreria ( raster )
+library( RStoolbox ) # Contiene info per tariffa PCA
+libreria ( ggplot2 )
+libreria ( patchwork )
+setwd( " C:/lab/ " )
 
-p224r63_2011 <- brick("p224r63_2011_masked.grd")
+# Utilizziamo le immagini usate a inizio corso
+p224r63_2011  <- brick( " p224r63_2011_masked.grd " )
 
+# Ogni banda ha più di 4 milioni di pixel, quindi dobbiamo fare il ricampionamento con una finestra mobile
+# che lavora per blocchi di pixel e ne calcola il valore medio in modo da diminuire la risoluzione
+
+p224r63_2011res  <- aggregato( p224r63_2011 , fatto = 10 )
+
+# Confrontiamo l'immagine originale con quella ricampionata
+g1  <- ggRGB( p224r63_2011 , 4 , 3 , 2 )
+g2  <- ggRGB( p224r63_2011res , 4 , 3 , 2 )
+g1  +  g2
+
+# Ricampionamento aggressivo
+p224r63_2011res100  <- aggregato( p224r63_2011 , fatto = 100 )
+g3  <- ggRGB( p224r63_2011res100 , 4 , 3 , 2 )
+g1  +  g2  +  g3
