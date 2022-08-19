@@ -1,47 +1,163 @@
+# Copertura del suolo, variazioni dell'utilizzo del suolo in seguito ad attività antropica
+# Codice per la generazione di mappe di copertura del suolo da immagini satellitari
 
 library(raster)
-library(RStoolbox) # for classification
+library(RStoolbox)# Per la classificazione 
 install.packages("ggplot2")
 library(ggplot2)
 install.packages("patchwork")
 library(patchwork)
 
-
-# setwd("~/lab/") # Linux
-
+#settaggio della cartella di lavoro
 setwd("C:/lab/") # Windows
 
-# setwd("/Users/name/Desktop/lab/") # Mac
+# Importiamo tutta l'immagine satellitare defor1 con la funzione brick
+l92  <- brick( " defor1_.jpg " )
+plotRGB( l92 , 1 , 2 , 3 , stretch = " lin " )
+# La banda 1 è il rosso e tutto quello che vediamo rosso è vegetazione,
+# quindi la banda 1 corrisponde al NIR
 
-#importo l'intero pacco di dati 
-l92 <- brick("defor1_.jpg")
-plotRGB(l92, 1, 2, 3, stretch="lin")
+# Esercizio: importa defor2 e traccia entrambi in un'unica finestra
+l06  <- brick( " defor2_.jpg " )
+plotRGB( l06 , 1 , 2 , 3 , stretch = " lin " )
 
-# Exercise: import defor2 and plot both in a single window
-l06 <- brick("defor2_.jpg")
+par( mfrow = c( 2 , 1 ))
+plotRGB( l92 , 1 , 2 , 3 , stretch = " lin " )
+plotRGB( l06 , 1 , 2 , 3 , stretch = " lin " )
 
+# Realizzare un semplice multiframe con il pacchetto ggplot2.
+# Pacchetto servire per la visualizzazione dei dati
+install.packages( " ggplot2 " )
+libreria ( ggplot2 )
 
-par(mfrow=c(2,1))
-plotRGB(l92, 1, 2, 3, stretch="lin")
-plotRGB(l06, 1, 2, 3, stretch="lin")
+# ggRGB permette di plottare le immagini RGB sempre usando lo stesso codice
+ggRGB( l92 , 1 , 2 , 3 , stretch = " lin " )
+ggRGB( l06 , 1 , 2 , 3 , stretch = " lin " )
 
-ggRGB(l92, 1, 2, 3, stretch="lin")
+# Scarichiamo il pacchetto patchwork per poter assegnare ogni trama a un oggetto
+install.packages( " patchwork " )
+libreria ( patchwork )
 
+p1  <- ggRGB( l92 , 1 , 2 , 3 , stretch = " lin " )
+p2  <- ggRGB( l06 , 1 , 2 , 3 , stretch = " lin " )
 
-p1 <- ggRGB(l92, 1, 2, 3, stretch="lin")
-p2 <- ggRGB(l06, 1, 2, 3, stretch="lin")
+# Ora che abbiamo associato i plot agli oggetti possiamo richiamarli e creare
+# un multiframe semplicemente sommandoli o dividendoli (p1/p2) in base alla
+# disposizione che voglio
+p1
+p2
+# In questo modo avrò p1 affianco a p2
+p1  +  p2 
+# Per avere p1 sopra p2
+p1 / p2 
 
-p1+p2
-p1/p2 
+# Ora classifichiamo le immagini con la funzione unsuperClass e  
+# abbiamo bisogno di 2 classi
+l92c  <- unsuperClass( l92 , nClasses = 2 )
+plot( l92c $ mappa )
+# Classe 1: aree agricole + acqua (bianco, in questo caso,
+# perché i colori sono casuali ogni volta che vedo la mappa)
+# Classe 2: bosco (verde)
 
-#clasification 
-l92c <- unsuperClass(l92, nClasses=2)
-l92c
-plot(l92c$map)
+# Esercizio: classifica l'immagine Landsat del 2006
+l06c  <- unsuperClass( l06 , nClasses = 2 )
+plot( l06c $ mappa )
+# Classe 1: aree agricole + acqua
+# Classe 2: foresta
 
-l06c <- unsuperClass(l06, nClasses=2)
-l06c
-plot(l06c$map)
+# Frequenze
+freq( l92c $ mappa )
+# classe 1: 35591 pixel (aree agricole)
+# classe 2: 305701 pixel (foresta)
 
+tot92  <-  341292
+prop_foresta_92  <-  305701  /  tot92
+perc_forest_92  <-  305701  *  100  /  tot92
 
+# Esercizio: calcola la percentuale delle superfici agricole nel 1992
+prop_agr_92  <-  35591  /  tot92
+perc_agr_92  <-  35591  *  100  /  tot92
+# Oppure
+perc_agr_92  <-  100  -  perc_foresta_92
 
+freq( l06c $ mappa )
+# classe 1: 164028 pixel (aree agricole)
+# classe 2: 178698 pixel (foresta)
+
+# Lavoriamo sulle proporzioni delle frequenze dei pixel
+
+libreria ( raster )
+libreria ( ggplot2 )
+libreria ( patchwork )
+libreria ( RStoolbox )
+setwd( " C:/lab/ " )
+
+# Importiamo le due immagini di landsat
+l92  <- brick( " defor1_.jpg " )
+l06  <- brick( " defor2_.jpg " )
+
+# Creiamo un grafico delle immagini con ggRGB
+ggRGB( l92 , 1 , 2 , 3 , stretch = " lin " )
+ggRGB( l06 , 1 , 2 , 3 , stretch = " lin " )
+
+# Associamo i plot a un oggetto e poi con patchwork creiamo multiframe
+p1  <- ggRGB( l92 , 1 , 2 , 3 , stretch = " lin " )
+p2  <- ggRGB( l06 , 1 , 2 , 3 , stretch = " lin " )
+p1  +  p2
+
+# Stiamo calcolando la proporzione dei pixel di foresta e aree agricole per il 1992
+tot92  <-  341292
+prop_foresta_92  <-  305701  /  tot92
+perc_forest_92  <-  305701  *  100  /  tot92
+
+# Esercizio: calcola la percentuale delle superfici agricole nel 1992
+prop_agr_92  <-  35591  /  tot92
+perc_agr_92  <-  35591  *  100  /  tot92
+# Oppure
+perc_agr_92  <-  100  -  perc_foresta_92
+
+# percento_foresta_92: 89.57169
+# percent_agr_92: 10.42831
+
+# Calcoliamo le percentuali di foresta e aree agricole per il 2006 seguendo la stessa procedura
+tot_06  <-  342726
+perc_foresta_06  <-  178698  *  100  /  tot_06
+perc_agr_06  <-  100  -  perc_foresta_06
+
+# percento_foresta_06: 52.14019
+# percent_agr_06: 47.85981
+
+# DATI FINALI
+# percento_foresta_92: 89.57169
+# percent_agr_92: 10.42831
+# percento_foresta_06: 52.14019
+# percent_agr_06: 47.85981
+
+# Ora creiamo un dataframe (tabella) per i dati forniti
+# Costruiamo un dataframe con i nostri dati
+# Colonne (campi)
+class  <- c( " Foresta " , " Agricoltura " )
+percent_1992  <- c( 89.57169 , 10.42831 )
+percent_2006  <- c( 52.14019 , 47.85981 )
+
+multitemporal  <-  data.frame ( classe , percent_1992 , percent_2006 )
+Visualizza( multitemporale ) # Per vedere i dati in una tabella più ordinata
+
+# Facciamo il grafico per il 1992 con i dati
+ggplot( multitemporale , aes( x = classe , y = percent_1992 , colore = classe )) + 
+geom_bar( stat = " identity " , fill = " white " )
+
+# Esercizio: crea lo stesso grafico per il 2006
+ggplot( multitemporale , aes( x = classe , y = percent_2006 , colore = classe )) + 
+geom_bar( stat = " identity " , fill = " white " )
+
+# PDF
+pdf( " percentuali_1992.pdf " )
+ggplot( multitemporale , aes( x = classe , y = percent_1992 , colore = classe )) +
+geom_bar( stat = " identity " , fill = " white " )
+dev.off()
+ 
+pdf( " percentuali_2006.pdf " )
+ggplot( multitemporale , aes( x = classe , y = percent_2006 , colore = classe )) +
+geom_bar( stat = " identity " , fill = " white " )
+dev.off()
