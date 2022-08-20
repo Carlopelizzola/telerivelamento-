@@ -136,5 +136,85 @@ par(mfrow=c(1, 2))
 plot(ndvi_2015, col=cl) + title(main = "NDVI 2015")
 plot(ndvi_2022, col=cl) + title(main = "NDVI 2022")
 
+ 
+                                                   #### LAND COVER ####
 
+
+#2015 
+n2015_class <- unsuperClass(n2015, nClasses=2) 
+clc <- colorRampPalette(c("yellow", "red")) (100)
+plot(n2015_class$map, col=clc) + title(main ="suddivisione in classi del 2015")
+#classe 1: aree di vegetazione  
+#classe 2: aree di suolo nudo 
+
+#2022
+n2022_class <- unsuperClass(n2022, nClasses=2) 
+clc <- colorRampPalette(c("yellow", "red")) (100)
+plot(n2022_class$map, col=clc) + title(main ="suddivisione in classi del 2022")
+ 
+#confronto le due immagini 
+par(mfrow=c(1, 2))
+plot(n2015_class$map, col=clc) + title(main ="suddivisione in classi del 2015")
+plot(n2022_class$map, col=clc) + title(main ="suddivisione in classi del 2022")
+
+#frequenze 
+
+#frequenze 2015 
+freq(n2015_class$map)
+# value     count 
+# classe 1: 300520 Pixel (vegetazione)
+# classe 2: 105928 pixel (suolo nudo)
+#       NA: 180244 pixel (pixel bianchi dovti all'inclinazione dell'immagine satellitare non li considero nei calcoli)
+
+# 300520 + 105928 = 406448 quindi il totale dei pixel del 2015 è 406448 
+
+#percentuali 2015 
+tot2015 <- 406448 
+perc_veg_2015 <- 300520 * 100 / tot2015    # 73.93812 %
+perc_soil_2015 <- 105928 * 100 / tot2015   # 26.06188 % 
+
+#frequenze 2022
+freq(n2022_class$map)
+# value     count 
+# classe 1: 271822
+# classe 2: 136462
+#       NA: 176892
+
+# 271822 + 136462 = 408284 quindi il totale dei pixel del 2022 è 408284 
+
+#percentuali 2015 
+tot2022 <- 408284
+perc_veg_2022 <- 271822 * 100 / tot2022   # 66.5767 %
+perc_soil_2022 <- 136462 * 100 / tot2022  # 33.4233 %
+
+#creo dataframe per confrontare i dati 
+#creo prima le 3 colonne 
+class <- c("Vegetazione", "Suolo nudo") 
+percent_2015 <- c(73.93812, 26.06188)
+percent_2022 <- c(66.5767, 33.4233)
+
+multitemporal <- data.frame(class, percent_2015, percent_2022)
+View(multitemporal)
+
+#salvo il dataframe come file csv con la funzione write.csv lo apro con exel e lo salvo come immagine da mettere nella presentazione
+#write.csv(multitemporal, file = "multitemporal.csv") 
+
+#creo gli istogrammi prima con i dati del 2015 poi con quelli del 2022
+
+#istrgamma del 2015 
+perc_2015 <- ggplot(multitemporal, aes(x=class, y=percent_2015, color=class)) + geom_bar(stat="identity", fill="white") + ggtitle("percentuale 2015")
+
+#istogramma del 2022 
+perc_2022 <- ggplot(multitemporal, aes(x=class, y=percent_2022, color=class)) + geom_bar(stat="identity", fill="white") + ggtitle("percentuale 2022")
+
+
+
+
+                                    ##### VARIABILITA' #######
+
+#2015 
+nir_2015 <- n2015[[5]]
+
+#con la funzione focal faccio passare un moving window di 3x3 che calcola la deviazione standard di ogni pixel 
+sd_2015 <- focal(nir_2015, matrix(1/9, 3, 3), fun=sd)
 
