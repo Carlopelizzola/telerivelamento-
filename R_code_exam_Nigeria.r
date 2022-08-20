@@ -217,4 +217,104 @@ nir_2015 <- n2015[[5]]
 
 #con la funzione focal faccio passare un moving window di 3x3 che calcola la deviazione standard di ogni pixel 
 sd_2015 <- focal(nir_2015, matrix(1/9, 3, 3), fun=sd)
+#visione immediata della variabilità uso viridis 
+g1 <- ggplot() + geom_raster(sd_2015, mapping = aes(x=x, y=y, fill=layer)) + scale_fill_viridis() + ggtitle("deviazione standar della banda NIR 2015 tramite viridis")
+
+#in quasi tutta l'imaggine si ha bassa variabilità sia nella vegetazione sia nel suolo nudo. 
+
+#2022
+nir_2022 <- n2022[[5]]
+
+#con la funzione focal faccio passare un moving window di 3x3 che calcola la deviazione standard di ogni pixel 
+sd_2022 <- focal(nir_2022, matrix(1/9, 3, 3), fun=sd)
+#visione immediata della variabilità uso viridis 
+g2 <- ggplot() + geom_raster(sd_2022, mapping = aes(x=x, y=y, fill=layer)) + scale_fill_viridis() + ggtitle("deviazione standar della banda NIR 2022 tramite viridis")
+
+g2 + g1 
+
+                                        ### ANALISI MULTIVARIATA ###
+
+# 2015
+n2015_pca <- rasterPCA(n2015)
+
+# faccio la summary del modello per vedere quanta variabilità spiega ogni componente 
+summary(n2015_pca$model) 
+# proprortion of Variance: #PC1 spiega il 76.69% #PC2 spiega il 15.90%  #PC3 spiega il 5.9% 
+# faccio un plot con tutte le componenti 
+plot(n2015_pca$map) 
+
+#assegno l'oggetto alle prime 3 componenti: 
+pc1_2015 <- n2015_pca$map$PC1
+pc2_2015 <- n2015_pca$map$PC2
+pc3_2015 <- n2015_pca$map$PC3
+
+#tramite ggplot faccio il plot delle singole componenti, associo al plot un oggetto 
+#PC1 
+gpc1_2015 <- ggplot() + geom_raster(pc1_2015, mapping=aes(x=x, y=y, fill=PC1)) + ggtitle("PC1 2015")
+#PC2 
+gpc2_2015 <- ggplot() + geom_raster(pc2_2015, mapping=aes(x=x, y=y, fill=PC2)) + ggtitle("PC2 2015")
+#PC3 
+gpc3_2015 <- ggplot() + geom_raster(pc3_2015, mapping=aes(x=x, y=y, fill=PC3)) + ggtitle("PC3 2015")
+
+#unisco tutti e tre i plot 
+gpc1_2015 + gpc2_2015 + gpc3_2015
+
+# per vedere la variabilità calcolo la deviazione standard sulla PC1 di entrambe le immagini 
+# calcolo la deviazione standard della PC1 del 2015 sempre con una moving window 3 x 3 
+sd_pc1_2015 <- focal(pc1_2015, matrix(1/9, 3, 3), fun=sd)
+# faccio ggplot della deviazione standard della pc1 usando viridis 
+
+Im_2015 <- ggplot() + geom_raster(sd_pc1_2015, mapping=aes(x=x, y=y, fill=layer)) + scale_fill_viridis() + ggtitle("deviazione standard della PC1 del 2015 tramite il pachetto viridis")
+#bassa variabilità dove si ha la foresta 
+#si hanno dei piccoli picchi di massima varibilità in corrispondenza delle zone di suolo nudo 
+
+#visulizziamo assieme i due plot: ggplot dell'immagine del 2015 e la deviazione standard di PC1 basata su mw 3 x 3
+g1_2015 + im_2015
+
+
+#2022
+n2022_pca <- rasterPCA(n2022)
+
+# faccio la summary del modello per vedere quanta variabilità spiega ogni componente 
+summary(n2022_pca$model) 
+# proprortion of Variance: #PC1 spiega il 79.86% #PC2 spiega il 14.03%  #PC3 spiega il 4.09% 
+# faccio un plot con tutte le componenti 
+plot(n2022_pca$map) 
+
+#assegno l'oggetto alle prime 3 componenti: 
+pc1_2022 <- n2022_pca$map$PC1
+pc2_2022 <- n2022_pca$map$PC2
+pc3_2022 <- n2022_pca$map$PC3
+
+#tramite ggplot faccio il plot delle singole componenti, associo al plot un oggetto 
+#PC1 
+gpc1_2022 <- ggplot() + geom_raster(pc1_2022, mapping=aes(x=x, y=y, fill=PC1)) + ggtitle("PC1 2022")
+#PC2 
+gpc2_2022 <- ggplot() + geom_raster(pc2_2022, mapping=aes(x=x, y=y, fill=PC2)) + ggtitle("PC2 2022")
+#PC3 
+gpc3_2022 <- ggplot() + geom_raster(pc3_2022, mapping=aes(x=x, y=y, fill=PC3)) + ggtitle("PC3 2022")
+
+#unisco tutti e tre i plot 
+gpc1_2022 + gpc2_2022 + gpc3_2022
+
+# per vedere la variabilità calcolo la deviazione standard sulla PC1 di entrambe le immagini 
+# calcolo la deviazione standard della PC1 del 2015 sempre con una moving window 3 x 3 
+sd_pc1_2022 <- focal(pc1_2022, matrix(1/9, 3, 3), fun=sd)
+
+# faccio ggplot della deviazione standard della pc1 usando viridis 
+Im_2022 <- ggplot() + geom_raster(sd_pc1_2022, mapping=aes(x=x, y=y, fill=layer)) + scale_fill_viridis() + ggtitle("deviazione standard della PC1 del 2022 tramite il pachetto viridis")
+#bassa variabilità dove si ha la foresta 
+#si hanno dei piccoli picchi di massima varibilità in corrispondenza delle zone di suolo nudo 
+
+#visulizziamo assieme i due plot: ggplot dell'immagine del 2015 e la deviazione standard di PC1 basata su mw 3 x 3
+g1_2022 + Im_2022
+
+Im_2015 + Im_2022
+
+#i plot sono stati salvati in pdf seguendo la struttura generale: 
+#pdf("nome_plot.pdf")
+#plot() + 
+#title(main="")
+#dev.off()
+
 
