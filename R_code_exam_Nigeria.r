@@ -232,78 +232,124 @@ plot(ndvi_2022, col=cl) + title(main = "NDVI 2022")
 
                                                           #### LAND COVER ####
 
-# Per analizzare come è cambiato l'utilizzo suolo in un intervallo di tempo di 7 anni efettuo una classificazione in base alla disposizione dei pixel 
-#2015 
+# Per analizzare come è cambiato l'utilizzo suolo in un intervallo di tempo di 7 anni 
+# prima efettuo una classificazione in base alla disposizione dei pixel nello spazio a 3 bande 
+# suddividendo i pixel in 2 classi: aree di vegetazione e aree di suolo nudo per ogni immagine 
+# calcolo la frequenza di ogni classe per ogni immagine 
+# confronto le due immagini
+  
+                                                  ## SUDDIVISIONE IN DUE CLASSI DELLE IMMAGINI ##
+
+# SUDDIVISIONE IN 2 CLASSI DELL'IMMAGINE NEL 2015
+
+# suddivido i pixel dell'immagine in 2 classi tramite la funzione unsuperClass e la associo a n2015_class:
 n2015_class <- unsuperClass(n2015, nClasses=2) 
-clc <- colorRampPalette(c("yellow", "red")) (100)
-plot(n2015_class$map, col=clc) + title(main ="suddivisione in classi del 2015")
-#classe 1: aree di vegetazione  
-#classe 2: aree di suolo nudo 
 
-#2022
-n2022_class <- unsuperClass(n2022, nClasses=2) 
+# creo una colorRampPalette e la associo a clc:
 clc <- colorRampPalette(c("yellow", "red")) (100)
-plot(n2022_class$map, col=clc) + title(main ="suddivisione in classi del 2022")
+
+# PLOT 
+# effetuo un plot dove si evidenzia la suddivisione nelle due classi che prendono i colori assegnati dalla colorRampPalette:
+plot(n2015_class$map, col=clc) + title(main ="suddivisione in classi 2015")
+# classe 1: aree di vegetazione (appare di colore giallo)
+# classe 2: aree di suolo nudo (appare di colore rosso) 
+
+# SUDDIVISIONE IN 2 CLASSI DELL'IMMAGINE NEL 2022
+
+# suddivido i pixel dell'immagine in 2 classi tramite la funzione unsuperClass e la associo a n2015_class:
+n2022_class <- unsuperClass(n2022, nClasses=2)
+
+# creo una colorRampPalette e la associo a clc:
+clc <- colorRampPalette(c("yellow", "red")) (100)
+
+# PLOT
+# effetuo un plot dove si evidenzia la suddivisione nelle due classi che prendono i colori assegnati dalla colorRampPalette:
+plot(n2022_class$map, col=clc) + title(main ="suddivisione in classi 2022")
+# classe 1: aree di vegetazione (appare di colore giallo)
+# classe 2: aree di suolo nudo (appare di colore rosso) 
  
-#confronto le due immagini 
+# CONFRONTO LE DUE IMMAGINI CLASSIFICATE
+# confronto le due immagini classificate creando un multiframe con 1 riga e 2 colonne che contiene al suo interno le due immagini
 par(mfrow=c(1, 2))
-plot(n2015_class$map, col=clc) + title(main ="suddivisione in classi del 2015")
-plot(n2022_class$map, col=clc) + title(main ="suddivisione in classi del 2022")
+plot(n2015_class$map, col=clc) + title(main ="suddivisione in classi 2015")
+plot(n2022_class$map, col=clc) + title(main ="suddivisione in classi 2022")
+# classe 1: aree di vegetazione (appare di colore giallo) 
+# classe 2: aree di suolo nudo (appare di colore rosso) 
+# si nota un aumento nel 2022 delle aree di suolo nudo.
 
-#frequenze 
+                                                   ## CALCOLO DELLE FREQUENZE DELLE DUE IMMAGINI CLASSIFICATE ##
 
-#frequenze 2015 
+# FREQUENZE DELL'IMMAGINE DEL 2015:
+
+# Calcolo le frequenze dell'immagine del 2015 classificata tramite la funzione freq: 
 freq(n2015_class$map)
 # value     count 
 # classe 1: 300520 Pixel (vegetazione)
 # classe 2: 105928 pixel (suolo nudo)
 #       NA: 180244 pixel (pixel bianchi dovti all'inclinazione dell'immagine satellitare non li considero nei calcoli)
 
-# 300520 + 105928 = 406448 quindi il totale dei pixel del 2015 è 406448 
+# Calcolo il totale dei pixel dell'immagine del 2015 classificata per poi calcolarmi le percentuali di ciascuna classe:
+#  totale: 300520 + 105928 = 406448 pixel
+# quindi il totale dei pixel dell'immagine del 2015 classificata è 406448 pixel
 
-#percentuali 2015 
-tot2015 <- 406448 
+# PERCENTUALI DELL'IMMAGINE DEL 2015: 
+
+# Calcolo le percentuali dell'immagine del 2015 classificata per renderla confrontabile 
+# Calcolo tramite la semplice formula: count della classe * 100 / totale dei pixel della immagine classificata 
+tot2015 <- 406448 # assegno il totale dei pixel della immagine del 2015 classificata a tot2015
 perc_veg_2015 <- 300520 * 100 / tot2015    # 73.93812 %
 perc_soil_2015 <- 105928 * 100 / tot2015   # 26.06188 % 
 
-#frequenze 2022
+# FREQUENZE DELL'IMMAGINE DEL 2022:
+
+# Calcolo le frequenze dell'immagine del 2022 classificata tramite la funzione freq: 
 freq(n2022_class$map)
 # value     count 
-# classe 1: 271822
-# classe 2: 136462
-#       NA: 176892
+# classe 1: 271822 Pixel (vegetazione)
+# classe 2: 136462 Pixel (suolo nudo)
+#       NA: 176892 Pixel (Pixel bianchi dovuti all'inclinazione dell'immagine satellitare non li considero nei calcoli)
 
-# 271822 + 136462 = 408284 quindi il totale dei pixel del 2022 è 408284 
+# Calcolo il totale dei pixel dell'immagine del 2022 classificata per poi calcolarmi le percentuali di ciascuna classe:
+#  totale: 271822 + 136462 = 408284 pixel 
+# quindi il totale dei pixel dell'immagine del 2022 classificata è 408284 pixel 
 
-#percentuali 2015 
-tot2022 <- 408284
+# PERCENTUALI DELL'IMMAGINE DEL 2022: 
+
+# Calcolo le percentuali dell'immagine del 2022 classificata per renderla confrontabile 
+# Calcolo tramite la semplice formula: count della classe * 100 / totale dei pixel della immagine classificata 
+tot2022 <- 408284 # assegno il totale dei pixel della immagine del 2022 classificata a tot2022
 perc_veg_2022 <- 271822 * 100 / tot2022   # 66.5767 %
 perc_soil_2022 <- 136462 * 100 / tot2022  # 33.4233 %
 
-#creo dataframe per confrontare i dati 
-#creo prima le 3 colonne 
-class <- c("Vegetazione", "Suolo nudo") 
-percent_2015 <- c(73.93812, 26.06188)
-percent_2022 <- c(66.5767, 33.4233)
+# CONFRONTO DEI DATI PERCENTUALI 
 
+#creo dataframe per confrontare i dati percentuali ottenuti dalle analisi precedenti 
+#creo prima le 3 colonne 
+class <- c("Vegetazione", "Suolo nudo") # assegno un vettore a un ogetto che rapresenta la prima colonna 
+percent_2015 <- c(73.93812, 26.06188) # assegno un vettore a un ogetto che rappresenta la seconda colonna 
+percent_2022 <- c(66.5767, 33.4233) # assegno un vettore a un ogetto che rappresenta la terza colonna  
+
+# creo il dataframe tramite la funzione data.frame e la associo a multitemporal: 
 multitemporal <- data.frame(class, percent_2015, percent_2022)
-View(multitemporal)
+View(multitemporal) # Per visulizzare il dataframe in formato tabella
 
 #salvo il dataframe come file csv con la funzione write.csv lo apro con exel e lo salvo come immagine da mettere nella presentazione
 #write.csv(multitemporal, file = "multitemporal.csv") 
 
-#creo gli istogrammi prima con i dati del 2015 poi con quelli del 2022
+# CREAZIONE DI ISTOGRAMMI PER IL CONFRONTO DATI: 
 
-#istrgamma del 2015 
+# Creo un istrgamma che rappresenti i dati percentuali ottenuti dalle due classi dell'immagine del 2015 classificata: 
 perc_2015 <- ggplot(multitemporal, aes(x=class, y=percent_2015, color=class)) + geom_bar(stat="identity", fill="white") + ggtitle("percentuale 2015")
 
-#istogramma del 2022 
+# Creo un istrgamma che rappresenti i dati percentuali ottenuti dalle due classi dell'immagine del 2022 classificata: 
 perc_2022 <- ggplot(multitemporal, aes(x=class, y=percent_2022, color=class)) + geom_bar(stat="identity", fill="white") + ggtitle("percentuale 2022")
 
+# CONFRONTO DEI 2 ISCTOGRAMMI: 
+perc_2015 + perc_2022 # si nota come la percentuale delle aree a suolo nudo sia aumentata dal 2015 al 2022 e l'area vegetale sia diminuita 
 
 
 
-                                    ##### VARIABILITA' #######
+                                                     ##### VARIABILITA' #######
 
 #2015 
 nir_2015 <- n2015[[5]]
