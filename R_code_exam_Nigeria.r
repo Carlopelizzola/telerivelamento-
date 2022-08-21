@@ -350,28 +350,44 @@ perc_2015 + perc_2022 # si nota come la percentuale delle aree a suolo nudo sia 
 
 
                                                      ##### VARIABILITA' #######
+# calcolo la variabilità nello spazio 
+# scelgo come variabile la banda NIR (banda 5), in questo caso calcolo la deviazione standard 
 
-#2015 
+# VARIABILITA' DELL'IMMAGINE NEL 2015
+
+# estraggo la banda del NIR (5) dall'immagine n2015 e la associo a uno ogetto chiamato nir_2015
 nir_2015 <- n2015[[5]]
 
-#con la funzione focal faccio passare un moving window di 3x3 che calcola la deviazione standard di ogni pixel 
+# CALCOLO DEVIAZIONE STANDARD
+# con la funzione focal faccio passare un moving window di 3x3 che calcola la deviazione standard di ogni pixel 
 sd_2015 <- focal(nir_2015, matrix(1/9, 3, 3), fun=sd)
-#visione immediata della variabilità uso viridis 
-g1 <- ggplot() + geom_raster(sd_2015, mapping = aes(x=x, y=y, fill=layer)) + scale_fill_viridis() + ggtitle("deviazione standar della banda NIR 2015 tramite viridis")
 
-#in quasi tutta l'imaggine si ha bassa variabilità sia nella vegetazione sia nel suolo nudo. 
+# per avere una visione immediata della variabilità uso viridis 
+g1 <- ggplot() + geom_raster(sd_2015, mapping = aes(x=x, y=y, fill=layer)) + scale_fill_viridis() + ggtitle("deviazione standar della banda NIR 2015 tramite viridis") 
+# il massimo della variabilita è in corrispondenza del Lagos Lagoon a sud est della immagine e in corrispondenza delle citta di Ondo
+# si ha un bassa variabilità dove si ha vegetazione e suolo nudo 
 
-#2022
+# VARIABILITA' DELL'IMMAGINE NEL 2022
+
+# estraggo la banda del NIR (5) dall'immagine n2022 e la associo a uno ogetto chiamato nir_2022
 nir_2022 <- n2022[[5]]
 
-#con la funzione focal faccio passare un moving window di 3x3 che calcola la deviazione standard di ogni pixel 
+# CALCOLO DEVIAZIONE STANDARD
+# con la funzione focal faccio passare un moving window di 3x3 che calcola la deviazione standard di ogni pixel 
 sd_2022 <- focal(nir_2022, matrix(1/9, 3, 3), fun=sd)
-#visione immediata della variabilità uso viridis 
+
+# per avere una visione immediata della variabilità uso viridis 
 g2 <- ggplot() + geom_raster(sd_2022, mapping = aes(x=x, y=y, fill=layer)) + scale_fill_viridis() + ggtitle("deviazione standar della banda NIR 2022 tramite viridis")
 
+# CONFRONTO FRA LE DUE IMMAGINI: 
 g2 + g1 
+# si riesce apprezzare abbastanza bene la differenza tra le due immagini sebbene abbia usato le immagini ricampionate 
+# 
 
-                                        ### ANALISI MULTIVARIATA ###
+  
+                                                               ### ANALISI MULTIVARIATA ###
+
+# tramite l'analisi multivariata anziche scegliere una sola variabile posso compattare tutti i dati in un sistema più semplice 
 
 # 2015
 n2015_pca <- rasterPCA(n2015)
