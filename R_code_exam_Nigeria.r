@@ -1,7 +1,27 @@
-# Analisi e confronto di due immagini landsat della stessa località (Path:190, Row:055) nello stato della Nigeria dove è situata la riserva Akure Ofosu 
-#le immagini analizzate sono state acquisite in periodi diversi una il 26/01/2022 e l'altra il 14/12/2014
+                                                                 ##### ESAME 29 AGOSTO 2022 ######
+                                                                     
+                                                                #### RISERVA DI AKURE OFOSU #####
 
-# Istallazione dei pachetti necessari 
+# Analisi e confronto di due immagini satellitari Landsat della stessa località (Path:190, Row:055), rilevate in periodi diversi.
+# l'immagine satellitare analizzata più recente è stata acquisita nel 26/01/2022 ed è stata confrontata con un altra immagine satellitare della stessa località, rilevata nel 15/01/2015
+# le due immagini satellittari comprendono lo stato di Ondo situato nella Nigeria sudoccidentale; dove sono collocate la Riserva Akure Ofosu, la citta di Akure e di Ondo.
+# La riserva forestale copre 394 km 2 ed è di grande importanza per la conservazione della popolazione di scimpanzé in Nigeria
+
+# https://www.usgs.gov/faqs/what-are-band-designations-landsat-satellites # questo è il sito da cui ho scaricato le immagini satellitari con spiegazione di ogni banda. 
+# nello specifico in questa analisi sono state usate immagini satellitari rilevate dal Landsat 8/9 operational Land image (OLI) and Thermal infrared Sensor (TIRS)
+# dalle informazioni si ricava che:
+
+          # B2 = Blue 
+          # B3 = Green 
+          # B4 = Red
+          # B5 = NIR 
+
+# risoluzione 30 m 
+# 16 bit 
+
+
+                                                ### Istallazione dei pachetti necessari (se non già scaricati) ###
+
 # install.packages("raster")
 # install.packages("RStoolbox")
 # install.packages("ggplot2")
@@ -9,137 +29,210 @@
 # install.packages("viridis")
 # install.packages("rgdal")
 # install.packages("rasterdiv")
-# install.packages("sdm")
-# install.packages("rgdal", dependencies=T)
 
-#aperture delle librerie necessarie 
+
+                                                      #### APERTURA DEI PACHETTI NECESSARI ####
+
 library(raster) 
 library(RStoolbox) #per vissualizzare le immagini e calcoli 
 library(ggplot2) #per i plot ggplot 
 library(patchwork) #per creare multiframe con ggplot 
 library(viridis) 
 
-# settaggio della cartella di lavoro: 
+                                                     ### SETTAGGIO DELLA CARTELLA DI LAVORO ### 
+
 setwd("C:/lab/Nigeria_exam")
 
 
 
-                                                              ##### IMPORTAZIONE DEI DATI #####
-                                      
-                                            ##Importazione dei dati della immagine satellitare del 26/01/2022##
-#CREAZIONE LISTA 
+                                                        ##### IMPORTAZIONE DEI DATI #####
+                                     
+##Importazione dei dati della immagine satellitare del 26/01/2022##
+
+#CREAZIONE LISTA
 # Avendo scaricato le 7 bande separatamente le devo importare creando una lista con la funzione list.files:
 list_2022 <- list.files(pattern="LC09_L2SP") # quindi creo una lista contenete le bande e la associo a list_2022  
 
 #IMPORTAZIONE
-#una volta creata la lista, applico tramite la funzione lapply la funzione raster a tutta la lista creata per importare tutto.
-import_2022 <- lapply(list_2022, raster)
+# una volta creata la lista, per importare tutto corretamente applico, tramite la funzione lapply,la funzione raster a tutta la lista creata.
+import_2022 <- lapply(list_2022, raster) # la funzione raster mi permette di importare un singolo elemento.
 
 #CREAZIONE DI UN BLOCCO COMUNE CON TUTTI DATI IMPORTATI: 
-#una volta importato tutte le 7 bande posso creare un blocco comune a tutti i dati importati tramite la funzione stack: 
+#una volta importato tutte le 7 bande creo un blocco comune a tutti i dati importati tramite la funzione stack: 
 Nigeria_2022 <- stack(import_2022)
 
-# Ricampionamento 
-#visto che l'immagine pesa troppo la ricampiono con funzione agregate 
+# RICAMPIONAMENTO  
+#visto che l'immagine pesa troppo la ricampiono con funzione aggregate 
 n2022 <- aggregate(Nigeria_2022, fact=10)
 
 #PLOT 
-#plot normale per vedere le bande 
+#plot normale per visualizzare tutte le bande 
 plot(n2022)
 
-#immagine a colori naturali: 
-#faccio un plot con la banda R nella componente R, banda G nella componente G e banda B in B per osservare l'immagine con i colori naturali 
+# IMMAGINE A COLORI NATURALI: 
+# Per osservare l'immagine con i colori naturali, faccio un plot tramite ggRGB, impostando:
+   # la banda Red (4) nella componente R (red),
+   # la banda Green (3) nella componente G (green) e 
+   # la banda del Blue (2) nella componente B  
 n2022_vis <- ggRGB(n2022, 4, 3, 2, stretch="lin") + ggtitle("riserva Akure ofusu 2022")
 
-#Nir in R, red in G, green in B. 
-g1_2022 <- ggRGB(n2022, 5, 4, 3, stretch="lin") + ggtitle("ggplot 2022") 
-#in questo plot è evidente la vegetazione che appare rossa e il suolo nudo. 
+#IMMAGINE CON L'INFRAROSSO:
+# Per osservare l'immagine con l'infrarosso, faccio un plot tramite ggRGB, impostando: 
+   # la banda NIR (5) nella componente R (red) 
+   # la banda Red (4) nella componente G (green) 
+   # la banda Green (3) nella componente B (Blue). 
+g1_2022 <- ggRGB(n2022, 5, 4, 3, stretch="lin") + ggtitle("ggplot 2022") # in questo plot è evidente il suolo nudo e la vegetazione che appare rossa  
 
-#2014 
+
+##Importazione dei dati della immagine satellitare del 15/01/2015##
+
 # CREAZIONE LISTA 
 # Avendo scaricato le 7 bande separatamente le devo importare creando una lista con la funzione list.files:
-list_2015 <- list.files(pattern="LC08_L2SP") # quindi creo una lista contenete le bande e la associo a list_2022  
+list_2015 <- list.files(pattern="LC08_L2SP") # quindi creo una lista contenete le bande e la associo a list_2015  
 
-#IMPORTAZIONE
-#una volta creata la lista, applico tramite la funzione lapply la funzione raster a tutta la lista creata per importare tutto.
-import_2015 <- lapply(list_2015, raster)
+# IMPORTAZIONE
+# una volta creata la lista, per importare tutto corretamente applico, tramite la funzione lapply,la funzione raster a tutta la lista creata.
+import_2015 <- lapply(list_2015, raster) # la funzione raster mi permette di importare un singolo elemento.
 
-#CREAZIONE DI UN BLOCCO COMUNE CON TUTTI DATI IMPORTATI: 
-#una volta importato tutte le 7 bande posso creare un blocco comune a tutti i dati importati tramite la funzione stack: 
+# CREAZIONE DI UN BLOCCO COMUNE CON TUTTI DATI IMPORTATI: 
+# una volta importato tutte le 7 bande posso creare un blocco comune a tutti i dati importati tramite la funzione stack: 
 Nigeria_2015 <- stack(import_2015)
 
-# Ricampionamento 
-#visto che l'immagine pesa troppo la ricampiono con funzione agregate 
+# RICAMPIONAMENTO 
+# visto che l'immagine pesa troppo la ricampiono con funzione agregate 
 n2015 <- aggregate(Nigeria_2015, fact=10)
 
 #PLOT 
-#plot normale per vedere le bande 
+#plot normale per visualizzare le bande 
 plot(n2015)
 
-#immagine a colori naturali: 
-#faccio un plot con la banda R nella componente R, banda G nella componente G e banda B in B per osservare l'immagine con i colori naturali 
+# IMMAGINE A COLORI NATURALI: 
+# Per osservare l'immagine con i colori naturali, faccio un plot tramite ggRGB, impostando:
+   # la banda Red (4) nella componente R (red),
+   # la banda Green (3) nella componente G (green) e 
+   # la banda del Blue (2) nella componente B  
 n2015_vis <- ggRGB(n2015, 4, 3, 2, stretch="lin") + ggtitle("riserva Akure ofusu 2015")
 
-#Nir in R, red in G, green in B. 
-g1_2015 <- ggRGB(n2015, 5, 4, 3, stretch="lin") + ggtitle("ggplot 2014") 
-#in questo plot è evidente la vegetazione che appare rossa e il suolo nudo. 
+#IMMAGINE CON L'INFRAROSSO:
+# Per osservare l'immagine con l'infrarosso, faccio un plot tramite ggRGB, impostando: 
+   # la banda NIR (5) nella componente R (red) 
+   # la banda Red (4) nella componente G (green) 
+   # la banda Green (3) nella componente B (Blue). 
+g1_2015 <- ggRGB(n2015, 5, 4, 3, stretch="lin") + ggtitle("ggplot 2015") # in questo plot è evidente il suolo nudo e la vegetazione che appare rossa 
 
-# metto a confronto i plot del 2015 e del 2022che rappresenta le immagini a colori naturali
+# CONFRONTO LE IMMAGINI A COLORI NATURALI: 
+# metto a confronto i plot del 2015 e del 202 2che rappresenta le immagini a colori naturali
 n2015_vis + n2022_vis
+
+# CONFRONTO LE IMMAGINI CON L'IFRAROSSO
 # metto a confronto i ploto del 2015 e del 2022 che rappresenta le immagini con l'ifrarosso vicino
-g1_2015 + g1_2022 #rosso rapresenta la vegetazione 
+g1_2015 + g1_2022 # rosso rapresenta la vegetazione
+
+# CONFRONTO LE 4 IMMAGINI: 
+n2015_vis + n2022_vis / g1_2015 + g1_2022
 
 
 
                                                               ##### INDICI SPETTRALI #####
-#2015
+
+# Per valutare le condizioni della vegetazione efettuo il calcolo degli indici spettrali
+# Le foglie delle piante assorbono il rosso e riflettono NIR, per questo la vegetazione diventa rossa nelle immagini con l'infrarosso nel rosso
+   # Quindi se la pianta va in sofferenza riflette meno NIR e assorbe meno rosso. 
+
+# In questa analisi verra calcolato il DVI e NDVI 
+
+                                                ### CALCOLO DEL DVI (DIFFERENCE VEGETATION INDEX) ###
+
+# siccome le immagini hanno la stessa risoluzione è possibile calcolare il DVI (Difference Vegetation Index) 
+# DVI = Rifettanza NIR - Riflettanza Red
+# Range DVI (Imaggine a 16 bit) : -65535 a 65535 
+
+## CALCOLO DEL DVI NEL 2015 ###
+
+# DVI nel 2015
 dvi_2015 = n2015[[5]] - n2015[[4]]
-dvi_2015 # values -531.666, 12364.91 (min, max)
+dvi_2015 # values : -531.666, 12364.91 (min, max)
 
+# Creazione di una colorRampPalette:
 cl <- colorRampPalette(c("darkblue", "yellow", "red", "black")) (100)
 
-plot(dvi_2015, col=cl) + title(main="DVI 2015")
-#il giallo dovrebbe rapresentare il suolo nudo
+# PLOT 
+# Faccio un plot del DVI nel 2015 per visulizzare le condizioni della vegetazione 
+plot(dvi_2015, col=cl) + title(main="DVI 2015") # il giallo dovrebbe rapresentare il suolo nudo
 
-#2022
+## CALCOLO DEL DVI NEL 2022 ##
+
+# DVI nel 2022
 dvi_2022 = n2022[[5]] - n2022[[4]]
-dvi_2022 #values: -2203.359, 13241.65 (min, max) 
+dvi_2022 # values : -2203.359, 13241.65 (min, max) 
 
+# Creazione di una colorRampPalette:
 cl <- colorRampPalette(c("darkblue", "yellow", "red", "black")) (100)
 
-plot(dvi_2022, col=cl) + title(main="DVI 2022")
-#il giallo dovrebbe rapresentare il suolo nudo
+# PLOT
+# Faccio un plot del DVI nel 2022 per visualizzare le condizioni della vegetazione
+plot(dvi_2022, col=cl) + title(main="DVI 2022") # il giallo dovrebbe rapresentare il suolo nudo
 
+# CONFRONTO TRA I DUE DVI 
+# confronto i due DVI creando un multiframe con 1 riga 2 colonne che contiene al suo interno le due immagini 
 par(mfrow=c(1, 2))
 plot(dvi_2015, col=cl) + title(main="DVI 2015")
 plot(dvi_2022, col=cl) + title(main="DVI 2022")
 
-#differenza tra 2015 e 2022 
+# DIFFERENZA DEI DVI DELLE DUE IMMAGINI 
+# Faccio la differenza tra il DVI dell'immagine del 2015 e il DVI dell'immagine del 2022 
 dvi_diff = dvi_2015 - dvi_2022 
 
+# Creazione di una ColorRampPalette:
 cld <- colorRampPalette(c("blue", "white", "red")) (100)
 
-plot(dvi_diff, col=cld) + title(main="DVI 2015 - DVI 2022")
-#le zone in rosso rappresentano la deforestazione o la scomparsa in generale di vegetazione nel arco di tempo analizato. 
+# PLOT 
+# faccio un plot della differenza dei DVI delle due immagini per valutare ed evidenziare il cambiamento di stato di salute della foresta nel tempo trascorso. 
+plot(dvi_diff, col=cld) + title(main="DVI 2015 - DVI 2022") # le zone in rosso rappresentano la deforestazione o la scomparsa in generale di vegetazione nel arco di tempo analizato. 
 
-#Calcolo NDVI 
+                                                     #### CALCOLO DEL NDVI (NORMAL DIFFERENCE VEGETATION INDEX) ####
 
-#2015 
+# NDVI = (Riflettanza NIR - Riflettanza RED) / (Riflettanza NIR + Riflettanza RED)
+# Range NDVI (Imaggine a 16 bit) : -1 a 1
+
+## CALCOLO NDVI NEL 2015 ##
+
+# NDVI nel 2015
 ndvi_2015 = (n2015[[5]] - n2015[[4]]) / (n2015[[5]] + n2015[[4]])
+
+# PLOT 
+# faccio il plot del NDVI nel 2015
 plot(ndvi_2015, col=cl) + title(main = "NDVI 2015")
              
-#2022
+## CALCOLO NDVI NEL 2022
+
+# NDVI nel 2022
 ndvi_2022 = (n2022[[5]] - n2022[[4]]) / (n2022[[5]] + n2022[[4]])
+
+# PLOT 
+# Faccio il plot del NDVI nel 2022
 plot(ndvi_2022, col=cl) + title(main = "NDVI 2022")
 
+# CONFRONTO TRA I DUE NDVI 
+# confronto i due NDVI creando un multiframe con 1 riga e 2 colonne che contiene al suo interno le due immagini 
 par(mfrow=c(1, 2))
 plot(ndvi_2015, col=cl) + title(main = "NDVI 2015")
 plot(ndvi_2022, col=cl) + title(main = "NDVI 2022")
+# particolarmente evidente le strade che portano da Ondo alle altre città in giallo
+# in oltre dal confronto si nota una marcato aumento nella parte orientale della riserva Akure Ofuse di suolo nudo in giallo
+     # Probabilmente legato agli incedi avvenuti nei ultimmi anni per ampliare le coltivazioni 
 
- 
-                                                   #### LAND COVER ####
+# valori     < 0.1: suolo nudo  
+#        0.1 - 0.2: copertura vegetale quasi assente 
+#        0.2 - 0.3: copertura vegetale molto bassa 
+#        0.3 - 0.4: copertura vegetale bassa con vigoria bassa o copertura vegetale bassa con vigoria molto alta 
 
 
+
+
+                                                          #### LAND COVER ####
+
+# Per analizzare come è cambiato l'utilizzo suolo in un intervallo di tempo di 7 anni efettuo una classificazione in base alla disposizione dei pixel 
 #2015 
 n2015_class <- unsuperClass(n2015, nClasses=2) 
 clc <- colorRampPalette(c("yellow", "red")) (100)
