@@ -389,16 +389,18 @@ g2 + g1
 
 # tramite l'analisi multivariata anziche scegliere una sola variabile posso compattare tutti i dati in un sistema più semplice 
 
-# 2015
+# ANALISI MULTIVARIATA SULLA IMMAGINE DEL 2015:
 n2015_pca <- rasterPCA(n2015)
 
 # faccio la summary del modello per vedere quanta variabilità spiega ogni componente 
 summary(n2015_pca$model) 
 # proprortion of Variance: #PC1 spiega il 76.69% #PC2 spiega il 15.90%  #PC3 spiega il 5.9% 
-# faccio un plot con tutte le componenti 
+
+#PLOT
+# Effetto un plot con tutte le componenti 
 plot(n2015_pca$map) 
 
-#assegno l'oggetto alle prime 3 componenti: 
+# assegno l'oggetto alle prime 3 componenti: 
 pc1_2015 <- n2015_pca$map$PC1
 pc2_2015 <- n2015_pca$map$PC2
 pc3_2015 <- n2015_pca$map$PC3
@@ -414,11 +416,13 @@ gpc3_2015 <- ggplot() + geom_raster(pc3_2015, mapping=aes(x=x, y=y, fill=PC3)) +
 #unisco tutti e tre i plot 
 gpc1_2015 + gpc2_2015 + gpc3_2015
 
+# CALCOLO LA DEVIAZIONE STANDARD 
 # per vedere la variabilità calcolo la deviazione standard sulla PC1 di entrambe le immagini 
 # calcolo la deviazione standard della PC1 del 2015 sempre con una moving window 3 x 3 
 sd_pc1_2015 <- focal(pc1_2015, matrix(1/9, 3, 3), fun=sd)
-# faccio ggplot della deviazione standard della pc1 usando viridis 
 
+# PLOT
+# faccio ggplot della deviazione standard della pc1 usando viridis 
 Im_2015 <- ggplot() + geom_raster(sd_pc1_2015, mapping=aes(x=x, y=y, fill=layer)) + scale_fill_viridis() + ggtitle("deviazione standard della PC1 del 2015 tramite il pachetto viridis")
 #bassa variabilità dove si ha la foresta 
 #si hanno dei piccoli picchi di massima varibilità in corrispondenza delle zone di suolo nudo 
