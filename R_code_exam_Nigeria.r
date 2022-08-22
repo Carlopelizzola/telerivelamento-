@@ -352,15 +352,15 @@ perc_2015 + perc_2022 # si nota come la percentuale delle aree a suolo nudo sia 
 
 
                                                      ##### VARIABILITA' #######
+
 # calcolo la variabilità nello spazio 
-# scelgo come variabile la banda NIR (banda 5), in questo caso calcolo la deviazione standard
+# la variabile che utilizzo per calcolare la variabilità nello spazio delle immagini analizzate è la deviazione standard
 # la deviazione standard misura la variabilita intorno alla media.
-# più aumeta la diversità di valori e maggiore sara la deviazione standard 
-# la deviazione standar al quadrato mi da la varianza, in modo da aumetare la visulizzazione della variabilità di un dato
+# più aumeta la diversità di valori e maggiore sarà la deviazione standard maggiore sarà la variabilità 
 # questi calcoli vanno effetuati su una singola variabile # quindi dei layer che ho a disposizione (le bande della immagine satellitare) devo sceglierne uno 
 # perciò scelgo la banda NIR ( Banda 5 dell'infrarosso vicino) perchè sarebbe il layer più informativo visto che la vegetazione riflette moltissimo la luce NIR.
-# potrei scegliere anche NDVI 
-#
+
+
 # VARIABILITA' DELL'IMMAGINE NEL 2015 NELLA BANDA NIR
 
 # estraggo la banda del NIR (5) dall'immagine n2015 e la associo a uno ogetto chiamato nir_2015
@@ -407,7 +407,7 @@ n2015_pca <- rasterPCA(n2015)
 summary(n2015_pca$model) 
 # proprortion of Variance: #PC1 spiega il 76.69% #PC2 spiega il 15.90%  #PC3 spiega il 5.9% 
 
-#PLOT
+# PLOT
 # Effetto un plot con tutte le componenti 
 plot(n2015_pca$map) 
 
@@ -416,8 +416,9 @@ pc1_2015 <- n2015_pca$map$PC1
 pc2_2015 <- n2015_pca$map$PC2
 pc3_2015 <- n2015_pca$map$PC3
 
-#tramite ggplot faccio il plot delle singole componenti, associo al plot un oggetto 
-#PC1 
+# tramite ggplot faccio il plot delle singole componenti
+# associo al plot un oggetto 
+# PC1 
 gpc1_2015 <- ggplot() + geom_raster(pc1_2015, mapping=aes(x=x, y=y, fill=PC1)) + ggtitle("PC1 2015")
 #PC2 
 gpc2_2015 <- ggplot() + geom_raster(pc2_2015, mapping=aes(x=x, y=y, fill=PC2)) + ggtitle("PC2 2015")
@@ -434,9 +435,10 @@ sd_pc1_2015 <- focal(pc1_2015, matrix(1/9, 3, 3), fun=sd)
 
 # PLOT
 # faccio ggplot della deviazione standard della pc1 usando viridis 
-Im_2015 <- ggplot() + geom_raster(sd_pc1_2015, mapping=aes(x=x, y=y, fill=layer)) + scale_fill_viridis() + ggtitle("deviazione standard della PC1 del 2015 tramite il pachetto viridis")
-#bassa variabilità dove si ha la foresta 
-#si hanno dei piccoli picchi di massima varibilità in corrispondenza delle zone di suolo nudo 
+Im_2015 <- ggplot() + geom_raster(sd_pc1_2015, mapping=aes(x=x, y=y, fill=layer)) + scale_fill_viridis(option = "cividis") + ggtitle("deviazione standard della PC1 del 2015 tramite il pachetto viridis")
+# bassa variabilità dove si ha la foresta e il suolo nudo
+# la massima variabilità è in corrispondenza delle zone di transizione tra vegetazione e suolo nudo 
+# si riesce a notare anche le strade che tagliano la vegetazione per collegare le varie città 
 
 #visulizziamo assieme i due plot: ggplot dell'immagine del 2015 e la deviazione standard di PC1 basata su mw 3 x 3
 g1_2015 + im_2015
@@ -472,13 +474,14 @@ gpc1_2022 + gpc2_2022 + gpc3_2022
 sd_pc1_2022 <- focal(pc1_2022, matrix(1/9, 3, 3), fun=sd)
 
 # faccio ggplot della deviazione standard della pc1 usando viridis 
-Im_2022 <- ggplot() + geom_raster(sd_pc1_2022, mapping=aes(x=x, y=y, fill=layer)) + scale_fill_viridis() + ggtitle("deviazione standard della PC1 del 2022 tramite il pachetto viridis")
+Im_2022 <- ggplot() + geom_raster(sd_pc1_2022, mapping=aes(x=x, y=y, fill=layer)) + scale_fill_viridis(option = "cividis") + ggtitle("deviazione standard della PC1 del 2022 tramite il pachetto viridis")
 #bassa variabilità dove si ha la foresta 
 #si hanno dei piccoli picchi di massima varibilità in corrispondenza delle zone di suolo nudo 
 
 #visulizziamo assieme i due plot: ggplot dell'immagine del 2015 e la deviazione standard di PC1 basata su mw 3 x 3
 g1_2022 + Im_2022
 
+# visualizziamo assieme i plot della variabilità calcolata sulla PC1 per entrambi gli anni
 Im_2015 + Im_2022
 
 #i plot sono stati salvati in pdf seguendo la struttura generale: 
