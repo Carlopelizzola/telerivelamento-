@@ -27,16 +27,15 @@
 # install.packages("ggplot2")
 # install.packages("patchwork")
 # install.packages("viridis")
-# install.packages("rgdal")
-# install.packages("rasterdiv")
+
 
 
                                                       #### APERTURA DEI PACHETTI NECESSARI ####
 
 library(raster) 
-library(RStoolbox) #per vissualizzare le immagini e calcoli 
-library(ggplot2) #per i plot ggplot 
-library(patchwork) #per creare multiframe con ggplot 
+library(RStoolbox) # per vissualizzare le immagini e calcoli 
+library(ggplot2) # per i plot ggplot e per la visualizzazione dei dati
+library(patchwork) # per creare multiframe con ggplot 
 library(viridis) 
 
                                                      ### SETTAGGIO DELLA CARTELLA DI LAVORO ### 
@@ -60,6 +59,7 @@ import_2022 <- lapply(list_2022, raster) # la funzione raster mi permette di imp
 #CREAZIONE DI UN BLOCCO COMUNE CON TUTTI DATI IMPORTATI: 
 #una volta importato tutte le 7 bande creo un blocco comune a tutti i dati importati tramite la funzione stack: 
 Nigeria_2022 <- stack(import_2022)
+Nigeria_2022 # controllo le informazioni # immagine a 16 bit  
 
 # RICAMPIONAMENTO  
 #visto che l'immagine pesa troppo la ricampiono con funzione aggregate 
@@ -76,13 +76,14 @@ plot(n2022)
    # la banda del Blue (2) nella componente B  
 n2022_vis <- ggRGB(n2022, 4, 3, 2, stretch="lin") + ggtitle("riserva Akure ofusu 2022")
 
+n2022_vis <- ggRGB(n2022, 4, 3, 2, stretch="hist") + ggtitle("riserva Akure ofusu 2022")
+
 #IMMAGINE CON L'INFRAROSSO:
 # Per osservare l'immagine con l'infrarosso, faccio un plot tramite ggRGB, impostando: 
    # la banda NIR (5) nella componente R (red) 
    # la banda Red (4) nella componente G (green) 
    # la banda Green (3) nella componente B (Blue). 
 g1_2022 <- ggRGB(n2022, 5, 4, 3, stretch="lin") + ggtitle("ggplot 2022") # in questo plot è evidente il suolo nudo e la vegetazione che appare rossa  
-
 
 ##Importazione dei dati della immagine satellitare del 15/01/2015##
 
@@ -97,6 +98,7 @@ import_2015 <- lapply(list_2015, raster) # la funzione raster mi permette di imp
 # CREAZIONE DI UN BLOCCO COMUNE CON TUTTI DATI IMPORTATI: 
 # una volta importato tutte le 7 bande posso creare un blocco comune a tutti i dati importati tramite la funzione stack: 
 Nigeria_2015 <- stack(import_2015)
+Nigeria_2015 # # controllo le informazioni # immagine a 16 bit
 
 # RICAMPIONAMENTO 
 # visto che l'immagine pesa troppo la ricampiono con funzione agregate 
@@ -351,20 +353,29 @@ perc_2015 + perc_2022 # si nota come la percentuale delle aree a suolo nudo sia 
 
                                                      ##### VARIABILITA' #######
 # calcolo la variabilità nello spazio 
-# scelgo come variabile la banda NIR (banda 5), in questo caso calcolo la deviazione standard 
-
-# VARIABILITA' DELL'IMMAGINE NEL 2015
+# scelgo come variabile la banda NIR (banda 5), in questo caso calcolo la deviazione standard
+# la deviazione standard misura la variabilita intorno alla media.
+# più aumeta la diversità di valori e maggiore sara la deviazione standard 
+# la deviazione standar al quadrato mi da la varianza, in modo da aumetare la visulizzazione della variabilità di un dato
+# questi calcoli vanno effetuati su una singola variabile # quindi dei layer che ho a disposizione (le bande della immagine satellitare) devo sceglierne uno 
+# perciò scelgo la banda NIR ( Banda 5 dell'infrarosso vicino) perchè sarebbe il layer più informativo visto che la vegetazione riflette moltissimo la luce NIR.
+# potrei scegliere anche NDVI 
+#
+# VARIABILITA' DELL'IMMAGINE NEL 2015 NELLA BANDA NIR
 
 # estraggo la banda del NIR (5) dall'immagine n2015 e la associo a uno ogetto chiamato nir_2015
 nir_2015 <- n2015[[5]]
 
 # CALCOLO DEVIAZIONE STANDARD
 # con la funzione focal faccio passare un moving window di 3x3 che calcola la deviazione standard di ogni pixel 
-sd_2015 <- focal(nir_2015, matrix(1/9, 3, 3), fun=sd)
+# deviazione standard definta dalla funzione sd
+sd_2015 <- focal(nir_2015, matrix(1/9, 3, 3), fun=sd) # genero tramite la funzione matrix una matrice di 3 X 3 pixel definendo l'unita 1/9 e il numero di colonne e righe (3, 3)
 
-# per avere una visione immediata della variabilità uso viridis 
-g1 <- ggplot() + geom_raster(sd_2015, mapping = aes(x=x, y=y, fill=layer)) + scale_fill_viridis() + ggtitle("deviazione standar della banda NIR 2015 tramite viridis") 
+# per avere una visione immediata della variabilità uso viridis # ho usato la opzione Plasma perchè risalta maggiormente la variabilità
+g1 <- ggplot() + geom_raster(sd_2015, mapping = aes(x=x, y=y, fill=layer)) + scale_fill_viridis(option = "plasma") + ggtitle("deviazione standar della banda NIR 2015 tramite viridis")
+g1 
 # il massimo della variabilita è in corrispondenza del Lagos Lagoon a sud est della immagine e in corrispondenza delle citta di Ondo
+# si nota molto bene che si ha un alta variabilita nelle zone di transizione tra vegetazione e suolo nudo 
 # si ha un bassa variabilità dove si ha vegetazione e suolo nudo 
 
 # VARIABILITA' DELL'IMMAGINE NEL 2022
@@ -377,7 +388,7 @@ nir_2022 <- n2022[[5]]
 sd_2022 <- focal(nir_2022, matrix(1/9, 3, 3), fun=sd)
 
 # per avere una visione immediata della variabilità uso viridis 
-g2 <- ggplot() + geom_raster(sd_2022, mapping = aes(x=x, y=y, fill=layer)) + scale_fill_viridis() + ggtitle("deviazione standar della banda NIR 2022 tramite viridis")
+g2 <- ggplot() + geom_raster(sd_2022, mapping = aes(x=x, y=y, fill=layer)) + scale_fill_viridis(option = "plasma") + ggtitle("deviazione standar della banda NIR 2022 tramite viridis")
 
 # CONFRONTO FRA LE DUE IMMAGINI: 
 g2 + g1 
