@@ -1,5 +1,14 @@
 
 
+library(raster) 
+library(RStoolbox) # per vissualizzare le immagini e calcoli 
+library(ggplot2) # per i plot ggplot e per la visualizzazione dei dati
+library(patchwork) # per creare multiframe con ggplot 
+library(viridis) 
+
+                                                     ### SETTAGGIO DELLA CARTELLA DI LAVORO ### 
+
+setwd("C:/lab/Nigeria_exam")
 
 
 list_2022 <- list.files(pattern="LC09_L2SP")
@@ -8,3 +17,5 @@ Nigeria_2022 <- stack(import_2022)
 Nigeria_2022
 
 n2022 <- aggregate(Nigeria_2022, fact=10)
+
+
