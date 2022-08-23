@@ -22,11 +22,11 @@
 
                                                 ### Istallazione dei pachetti necessari (se non già scaricati) ###
 
-# install.packages("raster")
-# install.packages("RStoolbox")
-# install.packages("ggplot2")
-# install.packages("patchwork")
-# install.packages("viridis")
+    # install.packages("raster")
+    # install.packages("RStoolbox")
+    # install.packages("ggplot2")
+    # install.packages("patchwork")
+    # install.packages("viridis")
 
 
 
@@ -98,11 +98,14 @@ import_2015 <- lapply(list_2015, raster) # la funzione raster mi permette di imp
 # CREAZIONE DI UN BLOCCO COMUNE CON TUTTI DATI IMPORTATI: 
 # una volta importato tutte le 7 bande posso creare un blocco comune a tutti i dati importati tramite la funzione stack: 
 Nigeria_2015 <- stack(import_2015)
-Nigeria_2015 # # controllo le informazioni # immagine a 16 bit
+Nigeria_2015 # # controllo le informazioni # immagine a 16 bit # confrontando con la immagine del 2022 noto che ha una dimensione diversa
 
 # RICAMPIONAMENTO 
+# Ricampiono l'immagine perchè ha dimensioni diverse da quella del 2021: 
+Nigeria_2015_res <- resample(Nigeria_2015, Nigeria_2022)
+
 # visto che l'immagine pesa troppo la ricampiono con funzione agregate 
-n2015 <- aggregate(Nigeria_2015, fact=10)
+n2015 <- aggregate(Nigeria_2015_res, fact=10)
 
 #PLOT 
 #plot normale per visualizzare le bande 
