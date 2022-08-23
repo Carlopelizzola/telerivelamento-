@@ -1,0 +1,10 @@
+
+
+
+
+list_2022 <- list.files(pattern="LC09_L2SP")
+import_2022 <- lapply(list_2022, raster)
+Nigeria_2022 <- stack(import_2022)
+Nigeria_2022
+
+n2022 <- aggregate(Nigeria_2022, fact=10)
