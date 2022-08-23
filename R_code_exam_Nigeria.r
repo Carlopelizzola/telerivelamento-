@@ -48,22 +48,30 @@ setwd("C:/lab/Nigeria_exam")
                                      
 ##Importazione dei dati della immagine satellitare del 26/01/2022##
 
-#CREAZIONE LISTA
+# CREAZIONE LISTA
 # Avendo scaricato le 7 bande separatamente le devo importare creando una lista con la funzione list.files:
 list_2022 <- list.files(pattern="LC09_L2SP") # quindi creo una lista contenete le bande e la associo a list_2022  
 
-#IMPORTAZIONE
+# IMPORTAZIONE
 # una volta creata la lista, per importare tutto corretamente applico, tramite la funzione lapply,la funzione raster a tutta la lista creata.
 import_2022 <- lapply(list_2022, raster) # la funzione raster mi permette di importare un singolo elemento.
 
-#CREAZIONE DI UN BLOCCO COMUNE CON TUTTI DATI IMPORTATI: 
-#una volta importato tutte le 7 bande creo un blocco comune a tutti i dati importati tramite la funzione stack: 
+# CREAZIONE DI UN BLOCCO COMUNE CON TUTTI DATI IMPORTATI: 
+# una volta importato tutte le 7 bande creo un blocco comune a tutti i dati importati tramite la funzione stack: 
 Nigeria_2022 <- stack(import_2022)
 Nigeria_2022 # controllo le informazioni # immagine a 16 bit  
 
 # RICAMPIONAMENTO  
-#visto che l'immagine pesa troppo la ricampiono con funzione aggregate 
+# visto che l'immagine pesa troppo la ricampiono con funzione aggregate 
 n2022 <- aggregate(Nigeria_2022, fact=10)
+
+
+list_2022 <- list.files(pattern="LC09_L2SP") # Creazione lista
+import_2022 <- lapply(list_2022, raster)     # Importazione
+Nigeria_2022 <- stack(import_2022) # Creazione di un blocco con tutti dati importati
+
+n2022 <- aggregate(Nigeria_2022, fact=10) # Ricapionamento
+
 
 #PLOT 
 #plot normale per visualizzare tutte le bande 
@@ -74,16 +82,16 @@ plot(n2022)
    # la banda Red (4) nella componente R (red),
    # la banda Green (3) nella componente G (green) e 
    # la banda del Blue (2) nella componente B  
-n2022_vis <- ggRGB(n2022, 4, 3, 2, stretch="lin") + ggtitle("riserva Akure ofusu 2022")
-
-n2022_vis <- ggRGB(n2022, 4, 3, 2, stretch="hist") + ggtitle("riserva Akure ofusu 2022")
+n2022_vis <- ggRGB(n2022, 4, 3, 2) + 
+             ggtitle("riserva Akure Ofusu 2022")
 
 #IMMAGINE CON L'INFRAROSSO:
 # Per osservare l'immagine con l'infrarosso, faccio un plot tramite ggRGB, impostando: 
    # la banda NIR (5) nella componente R (red) 
    # la banda Red (4) nella componente G (green) 
    # la banda Green (3) nella componente B (Blue). 
-g1_2022 <- ggRGB(n2022, 5, 4, 3, stretch="lin") + ggtitle("ggplot 2022") # in questo plot è evidente il suolo nudo e la vegetazione che appare rossa  
+g1_2022 <- ggRGB(n2022, 5, 4, 3) + 
+           ggtitle("Riserva Akure Ofusu NIR 2022") # in questo plot è evidente il suolo nudo e la vegetazione che appare rossa  
 
 ##Importazione dei dati della immagine satellitare del 15/01/2015##
 
@@ -107,6 +115,12 @@ Nigeria_2015_res <- resample(Nigeria_2015, Nigeria_2022)
 # visto che l'immagine pesa troppo la ricampiono con funzione agregate 
 n2015 <- aggregate(Nigeria_2015_res, fact=10)
 
+list_2015 <- list.files(pattern="LC08_L2SP") # Creazione lista
+import_2015 <- lapply(list_2015, raster)     # Importazione
+Nigeria_2015 <- stack(import_2015) # Creazione di un blocco con tutti dati importati
+Nigeria_2015_res <- resample(Nigeria_2015, Nigeria_2022) # ricampionamento
+n2015 <- aggregate(Nigeria_2015_res, fact=10) # ricampionamento 
+
 #PLOT 
 #plot normale per visualizzare le bande 
 plot(n2015)
@@ -115,15 +129,27 @@ plot(n2015)
 # Per osservare l'immagine con i colori naturali, faccio un plot tramite ggRGB, impostando:
    # la banda Red (4) nella componente R (red),
    # la banda Green (3) nella componente G (green) e 
-   # la banda del Blue (2) nella componente B  
-n2015_vis <- ggRGB(n2015, 4, 3, 2, stretch="lin") + ggtitle("riserva Akure ofusu 2015")
+   # la banda del Blue (2) nella componente B
+n2015_vis <- ggRGB(n2015, 4, 3, 2) + 
+             ggtitle("riserva Akure Ofusu 2015")
 
 #IMMAGINE CON L'INFRAROSSO:
 # Per osservare l'immagine con l'infrarosso, faccio un plot tramite ggRGB, impostando: 
    # la banda NIR (5) nella componente R (red) 
    # la banda Red (4) nella componente G (green) 
    # la banda Green (3) nella componente B (Blue). 
-g1_2015 <- ggRGB(n2015, 5, 4, 3, stretch="lin") + ggtitle("ggplot 2015") # in questo plot è evidente il suolo nudo e la vegetazione che appare rossa 
+
+# 2015 
+g1_2015 <- ggRGB(n2015, 5, 4, 3) + 
+           ggtitle("Riserva Akure Ofusu NIR 2015") 
+
+
+# in questo plot è evidente il suolo nudo e la vegetazione che appare rossa 
+
+pdf("g1_2015_plot.pdf")
+ggRGB(n2015, 5, 4, 3) + 
+ggtitle("Riserva Akure Ofusu NIR 2015") 
+dev.off()
 
 # CONFRONTO LE IMMAGINI A COLORI NATURALI: 
 # metto a confronto i plot del 2015 e del 202 2che rappresenta le immagini a colori naturali
