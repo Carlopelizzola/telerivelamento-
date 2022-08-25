@@ -5,7 +5,7 @@
 # Analisi e confronto di due immagini satellitari Landsat della stessa località (Path:190, Row:055), rilevate in periodi diversi.
 # l'immagine satellitare analizzata più recente è stata acquisita nel 26/01/2022 ed è stata confrontata con un altra immagine satellitare della stessa località, rilevata nel 15/01/2015
 # le due immagini satellittari comprendono lo stato di Ondo situato nella Nigeria sudoccidentale; dove sono collocate la Riserva Akure Ofosu, la citta di Akure e di Ondo.
-# La riserva forestale copre 394 km 2 ed è di grande importanza per la conservazione della popolazione di scimpanzé in Nigeria
+# La riserva forestale copre 394 km ed è di grande importanza per la conservazione della popolazione di scimpanzé in Nigeria
 
 # https://www.usgs.gov/faqs/what-are-band-designations-landsat-satellites # questo è il sito da cui ho scaricato le immagini satellitari con spiegazione di ogni banda. 
 # nello specifico in questa analisi sono state usate immagini satellitari rilevate dal Landsat 8/9 operational Land image (OLI) and Thermal infrared Sensor (TIRS)
