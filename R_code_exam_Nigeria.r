@@ -77,8 +77,8 @@ plot(n2022)
 n2022_vis <- ggRGB(n2022, 4, 3, 2) + 
              ggtitle("riserva Akure Ofusu 2022")
 
-#IMMAGINE CON L'INFRAROSSO
-# Per osservare l'immagine con l'infrarosso, faccio un plot tramite ggRGB, impostando: 
+#IMMAGINE AD INFRAROSSO
+# Per osservare l'immagine ad infrarosso, faccio un plot tramite ggRGB, impostando: 
    # la banda NIR (5) nella componente R (red) 
    # la banda Red (4) nella componente G (green) 
    # la banda Green (3) nella componente B (Blue). 
@@ -88,24 +88,24 @@ g1_2022 <- ggRGB(n2022, 5, 4, 3) +
 ##Importazione dei dati dell'immagine satellitare del 15/01/2015##
 
 # CREAZIONE LISTA 
-# Avendo scaricato le 7 bande separatamente le devo importare creando una lista con la funzione list.files:
+# Avendo scaricato le 7 bande separatamente, le importo creando una lista con la funzione list.files:
 list_2015 <- list.files(pattern="LC08_L2SP") # quindi creo una lista contenete le bande e la associo a list_2015  
 
 # IMPORTAZIONE
-# una volta creata la lista, per importare tutto corretamente applico, tramite la funzione lapply,la funzione raster a tutta la lista creata.
+# Una volta creata la lista, per importare tutto corretamente applico, tramite la funzione lapply, la funzione raster a tutta la lista creata.
 import_2015 <- lapply(list_2015, raster) # la funzione raster mi permette di importare un singolo elemento.
 
 # CREAZIONE DI UN BLOCCO COMUNE CON TUTTI DATI IMPORTATI: 
-# una volta importato tutte le 7 bande posso creare un blocco comune a tutti i dati importati tramite la funzione stack: 
+# Importato le 7 bande posso creare un blocco comune a tutti i dati importati tramite la funzione stack: 
 Nigeria_2015 <- stack(import_2015) # Creazione di un blocco con tutti dati importati
-Nigeria_2015 # # controllo le informazioni # immagine a 16 bit 
-# confrontando le informazioni appena ottenute con quelle dell'immagine del 2022 dimensioni diverse.
+Nigeria_2015 # Controllo le informazioni # immagine a 16 bit 
+# Confrontando le informazioni appena ottenute con quelle dell'immagine del 2022 dimensioni diverse.
 
 # RICAMPIONAMENTO 
 # Ricampiono l'immagine perchè ha dimensioni diverse da quella del 2022: 
 Nigeria_2015_res <- resample(Nigeria_2015, Nigeria_2022)
 
-# visto che l'immagine pesa troppo la ricampiono con funzione agregate 
+# Ricampiono con la funzione agregate 
 n2015 <- aggregate(Nigeria_2015_res, fact=10) # ricampionamento
 
 # PLOT 
@@ -134,7 +134,7 @@ g1_2015 <- ggRGB(n2015, 5, 4, 3) +
 n2015_vis + n2022_vis
 
 # CONFRONTO LE IMMAGINI AD INFRAROSSO
-# metto a confronto i plot del 2015 e del 2022 che rappresentano le immagini ad infrarosso:
+# Metto a confronto i plot del 2015 e del 2022 che rappresentano le immagini ad infrarosso:
 g1_2015 + g1_2022 # rosso rappresenta la vegetazione
 
 # CONFRONTO LE 4 IMMAGINI: 
@@ -167,7 +167,7 @@ cl <- colorRampPalette(c("darkblue", "yellow", "red", "black")) (100)
 
 # PLOT 
 # Faccio un plot del DVI nel 2015 per visulizzare le condizioni della vegetazione 
-plot(dvi_2015, col=cl) + title(main="DVI 2015") # il giallo dovrebbe rapresentare il suolo nudo
+plot(dvi_2015, col=cl) + title(main="DVI 2015") # il giallo rappresenta il suolo nudo
 
 
 ## CALCOLO DEL DVI NEL 2022 ##
@@ -270,12 +270,12 @@ clc <- colorRampPalette(c("yellow", "red")) (100)
 # PLOT 
 # Effettuo un plot dove evidenzio la suddivisione nelle due classi, che prendono i colori assegnati dalla colorRampPalette:
 plot(n2015_class$map, col=clc) + title(main ="suddivisione in classi 2015")
-# classe 1: aree di vegetazione (appare di colore rosso)
-# classe 2: aree di suolo nudo (appare di colore giallo) 
+# Classe 1: aree di vegetazione (appare di colore rosso)
+# Classe 2: aree di suolo nudo (appare di colore giallo) 
 
 
 # SUDDIVISIONE IN 2 CLASSI DELL'IMMAGINE NEL 2022
-# Suddivido i pixel dell'immagine in 2 classi tramite la funzione unsuperClass e la associo a n2015_class:
+# Suddivido i pixel dell'immagine in 2 classi tramite la funzione unsuperClass e la associo a n2022_class:
 n2022_class <- unsuperClass(n2022, nClasses=2)
 
 # Creo una colorRampPalette e la associo a clc:
@@ -392,7 +392,10 @@ sd_2015 <- focal(nir_2015, matrix(1/9, 3, 3), fun=sd) # Genero tramite la funzio
 
 # Per avere una visione immediata della variabilità uso viridis 
 # Ho usato l'opzione Plasma perchè risalta maggiormente la variabilità
-g1 <- ggplot() + geom_raster(sd_2015, mapping = aes(x=x, y=y, fill=layer)) + scale_fill_viridis(option = "plasma") + ggtitle("deviazione standar della banda NIR 2015 tramite viridis")
+g1 <- ggplot() + 
+      geom_raster(sd_2015, mapping = aes(x=x, y=y, fill=layer)) + 
+      scale_fill_viridis(option = "plasma") + 
+      ggtitle("deviazione standar della banda NIR 2015 tramite viridis")
 g1 
 # Il massimo della variabilità è in corrispondenza del Lagos Lagoon a sud est dell'immagine e in corrispondenza della città di Ondo
 # Si ha un'alta variabilità nelle zone di transizione tra vegetazione e suolo nudo e una bassa variabilità dove si trova vegetazione e suolo nudo 
@@ -406,7 +409,11 @@ nir_2022 <- n2022[[5]]
 sd_2022 <- focal(nir_2022, matrix(1/9, 3, 3), fun=sd)
 
 # Per avere una visione immediata della variabilità uso viridis 
-g2 <- ggplot() + geom_raster(sd_2022, mapping = aes(x=x, y=y, fill=layer)) + scale_fill_viridis(option = "plasma") + ggtitle("deviazione standar della banda NIR 2022 tramite viridis")
+g2 <- ggplot() + 
+      geom_raster(sd_2022, mapping = aes(x=x, y=y, fill=layer)) + 
+      scale_fill_viridis(option = "plasma") + 
+      ggtitle("deviazione standar della banda NIR 2022 tramite viridis")
+g2
 
 # CONFRONTO FRA LE DUE IMMAGINI: 
 g2 + g1 
@@ -514,9 +521,13 @@ gpc1_2022 <- ggplot() +
              ggtitle("PC1 2022")
 
 #PC2 
-gpc2_2022 <- ggplot() + geom_raster(pc2_2022, mapping=aes(x=x, y=y, fill=PC2)) + ggtitle("PC2 2022")
+gpc2_2022 <- ggplot() + 
+             geom_raster(pc2_2022, mapping=aes(x=x, y=y, fill=PC2)) + 
+             ggtitle("PC2 2022")
 #PC3 
-gpc3_2022 <- ggplot() + geom_raster(pc3_2022, mapping=aes(x=x, y=y, fill=PC3)) + ggtitle("PC3 2022")
+gpc3_2022 <- ggplot() + 
+             geom_raster(pc3_2022, mapping=aes(x=x, y=y, fill=PC3)) + 
+             ggtitle("PC3 2022")
 
 #unisco tutti e tre i plot 
 gpc1_2022 + gpc2_2022 + gpc3_2022
